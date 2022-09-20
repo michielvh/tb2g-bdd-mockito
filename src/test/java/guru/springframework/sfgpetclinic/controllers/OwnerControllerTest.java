@@ -47,12 +47,14 @@ class OwnerControllerTest {
         Owner owner = new Owner(1l, "Joe", "Buck");
         List<Owner> ownerList = new ArrayList<>();
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        // when invoked, capture argument passed into
         given(service.findAllByLastNameLike(captor.capture())).willReturn(ownerList);
 
         //when
         String viewName = ownerController.processFindForm(owner, result, null);
 
         //then
+        // only checks the captured arguments!
         assertThat("%Buck%").isEqualToIgnoringCase(captor.getValue());
     }
 
@@ -61,12 +63,14 @@ class OwnerControllerTest {
         //given
         Owner owner = new Owner(1l, "Joe", "Buck");
         List<Owner> ownerList = new ArrayList<>();
+        // when invoked, capture argument passed into
         given(service.findAllByLastNameLike(stringArgumentCaptor.capture())).willReturn(ownerList);
 
         //when
         String viewName = ownerController.processFindForm(owner, result, null);
 
         //then
+        // only checks the captured arguments!
         assertThat("%Buck%").isEqualToIgnoringCase(stringArgumentCaptor.getValue());
     }
 
