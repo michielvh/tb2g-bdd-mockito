@@ -19,6 +19,7 @@ import guru.springframework.sfgpetclinic.model.Owner;
 import guru.springframework.sfgpetclinic.repositories.OwnerRepository;
 import guru.springframework.sfgpetclinic.repositories.PetRepository;
 import guru.springframework.sfgpetclinic.repositories.PetTypeRepository;
+import guru.springframework.sfgpetclinic.services.OwnerService;
 import guru.springframework.sfgpetclinic.services.springdatajpa.OwnerSDJpaService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +30,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,8 +41,8 @@ class OwnerControllerTest {
     @Mock
     Model model;
 
-    @Mock
-    OwnerSDJpaService service;
+    @Mock(lenient = true)
+    OwnerService service;
 
     @InjectMocks
     OwnerController ownerController;
@@ -112,6 +115,7 @@ class OwnerControllerTest {
         // only checks the captured arguments!
         assertThat("%Buck%").isEqualToIgnoringCase(stringArgumentCaptor.getValue());
         assertThat("redirect:/owners/1").isEqualToIgnoringCase(viewName);
+        verifyNoMoreInteractions(model);
     }
 
     @Test
@@ -122,10 +126,15 @@ class OwnerControllerTest {
         //when
         String viewName = ownerController.processFindForm(owner, result, null);
 
+
+
+
+
         //then
         // only checks the captured arguments!
         assertThat("%DontFindMe%").isEqualToIgnoringCase(stringArgumentCaptor.getValue());
         assertThat("owners/findOwners").isEqualToIgnoringCase(viewName);
+        verifyZeroInteractions(model);
     }
 
     @Test
