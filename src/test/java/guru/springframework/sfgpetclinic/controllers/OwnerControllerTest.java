@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -23,7 +24,10 @@ import guru.springframework.sfgpetclinic.services.springdatajpa.OwnerSDJpaServic
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -128,7 +132,7 @@ class OwnerControllerTest {
     void processFindFormWildcardMultipleFound() {
         //given
         Owner owner = new Owner(1l, "Joe", "multipleHits");
-
+        InOrder inOrder = inOrder(service, model);
         //when
         String viewName = ownerController.processFindForm(owner, result, model);
 
@@ -136,6 +140,10 @@ class OwnerControllerTest {
         // only checks the captured arguments!
         assertThat("%multipleHits%").isEqualToIgnoringCase(stringArgumentCaptor.getValue());
         assertThat("owners/ownersList").isEqualToIgnoringCase(viewName);
+
+        // inorder asserts
+        inOrder.verify(service).findAllByLastNameLike(anyString());
+        inOrder.verify(model).addAttribute(anyString(),anyList());
     }
 
     @Test
