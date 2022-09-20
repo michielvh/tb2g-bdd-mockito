@@ -1,7 +1,11 @@
 package guru.springframework.sfgpetclinic.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,17 +38,50 @@ class OwnerControllerTest {
     @Mock
     BindingResult result;
 
+    @Captor
+    ArgumentCaptor<String> stringArgumentCaptor;
+
+    @Test
+    void processFindFormWildcardString() {
+        //given
+        Owner owner = new Owner(1l, "Joe", "Buck");
+        List<Owner> ownerList = new ArrayList<>();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        given(service.findAllByLastNameLike(captor.capture())).willReturn(ownerList);
+
+        //when
+        String viewName = ownerController.processFindForm(owner, result, null);
+
+        //then
+        assertThat("%Buck%").isEqualToIgnoringCase(captor.getValue());
+    }
+
+    @Test
+    void processFindFormWildcardStringAnnotation() {
+        //given
+        Owner owner = new Owner(1l, "Joe", "Buck");
+        List<Owner> ownerList = new ArrayList<>();
+        given(service.findAllByLastNameLike(stringArgumentCaptor.capture())).willReturn(ownerList);
+
+        //when
+        String viewName = ownerController.processFindForm(owner, result, null);
+
+        //then
+        assertThat("%Buck%").isEqualToIgnoringCase(stringArgumentCaptor.getValue());
+    }
+
     @Test
     void processCreationFormValid() {
 
-
+        //given
         Owner owner = new Owner(5l,"first","last");
         given(result.hasErrors()).willReturn(false);
-
         when(service.save(any(Owner.class))).thenReturn(owner);
 
+        //when
         String redirect = ownerController.processCreationForm(owner,result);
 
+        //then
         verify(service).save(any(Owner.class));
         assertThat("redirect:/owners/5").isEqualTo(redirect);
 
